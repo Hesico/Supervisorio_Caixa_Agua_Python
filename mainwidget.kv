@@ -1,0 +1,305 @@
+#:kivy 1.11.1
+#:import hex kivy.utils.get_color_from_hex
+<MainWidget>:
+    orientation: 'vertical'
+    canvas:
+        Color:
+            rgba: hex('#F4A460')
+        Rectangle:
+            size: self.size
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: (1,0.1)
+        spacing: 10
+        Label:
+            text: 'SUPERVISÓRIO RESERVATÓRIO v1.0'
+            #desabilita dica de tamanho do eixo x
+            size_hint_x: None 
+            width: 300
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: None
+            width: 400
+            Label:
+                text: 'Configurações'
+            BoxLayout:
+                orientation: 'horizontal'
+                Button:
+                    text: 'MODBUS'
+                    on_release: root._modbusPopup.open()
+                Button:
+                    text: 'Scan Time'
+                    on_release: root._scanPopup.open()
+        Image:
+            id: img_con
+            size_hint_x: None
+            width: 80
+            #caminho da imagem desejada
+            source: 'imgs/desconectado.png' 
+            #imagem posicionada no topo e na direita
+            pos_hint: {'top':1, 'right': 1} 
+    FloatLayout:
+        canvas:
+            Color:
+                rgba: hex('#FFFFF0')
+            Rectangle:
+                size: self.size
+        Image:
+            id: planta
+            source: 'imgs/planta.png'
+            
+        Label:
+            id: lb_tanque
+            #desabilita para os dois eixos
+            size_hint: (None,None) 
+            size: (tanque.size[0]*0.51, tanque.size[1])
+            pos_hint: {'x': 0.09, 'y': 0.253}
+            canvas:
+                Color:
+                    rgb: 0,0.5,1
+                Rectangle:
+                    size: self.size
+                    pos: (self.pos[0] + self.width*1.5, self.pos[1])
+                            
+        Image:
+            id: tanque
+            source: 'imgs/tanque.png'
+            size_hint: 0.47,0.47
+            pos_hint: {'x': 0.336, 'y': 0.253}
+
+        Image:
+            id: sensor_baixo             
+            source: 'imgs/sensor_off_d.png'
+            size_hint: (None, None)
+            size: (0.3*61,0.3*52)
+            pos_hint: {'x': 0.438, 'y': 0.303}
+         
+        Image:
+            id: sensor_alto              
+            source: 'imgs/sensor_off_e.png'
+            size_hint: (None, None)
+            size: (0.3*61,0.3*52)
+            pos_hint: {'x': 0.682, 'y': 0.694}
+
+        Button:
+            id: solenoide_bt
+            size_hint: (None, None)
+            size: (85,86)
+            pos_hint: {'x': 0.794, 'y': 0.25}
+            #imagem para colocar no botão quando não estiver pressionado
+            background_normal: 'imgs/valve_off.png' 
+            #imagem para colocar no botão quando estiver pressionado
+            background_down: 'imgs/valve_off.png' 
+            on_release:
+                root._alteraValvula()
+                
+        CustomLabel:
+            id: motor_lb
+            text: 'ON/OFF'
+            pos_hint: {'x': -0.42, 'y': 0.35}
+        
+        Button:
+            id: motor_bt
+            background_normal: 'imgs/bt_off.png' 
+            background_down: 'imgs/bt_off.png'
+            size_hint: (0.135, 0.135)
+            pos_hint: {'x': 0.008, 'y': 0.73}
+            on_release:
+                root._alteraMotor()
+        
+        CustomLabel:
+            id: motor_automatico_lb
+            text: 'AUTO CTRL'
+            pos_hint: {'x': -0.32, 'y': 0.35}
+        
+        Button:
+            id: motor_automatico_bt
+            background_normal: 'imgs/bt_off.png' 
+            background_down: 'imgs/bt_off.png'
+            size_hint: (0.135, 0.135)
+            pos_hint: {'x': 0.11, 'y': 0.73}
+            on_release:
+                root._alteraControleMotor()
+
+        Image:
+            id: estado_motor              
+            source: 'imgs/motor_off.png'
+            size_hint: (None, None)
+            size: (0.9*35,0.9*105)
+            pos_hint: {'x': 0.124, 'y': 0.575}
+        
+        Label:
+            id: lb_temp
+            size_hint: (None,None)
+            pos_hint: {'x' : -0.1, 'y' : 0.135}            
+        
+        Button:
+            id: graf
+            size_hint: (None, None)
+            size: (0.9*62,0.9*58) #ajuste para ocupar 90%
+            background_normal: 'imgs/graph_icon.png'
+            background_down: 'imgs/graph_icon.png'
+            pos_hint: {'x' : 0.53, 'y' : 0.155}
+            on_release:
+                root._graph.open()
+
+        CustomLabel:
+            id: freq_des_lb
+            text: 'FREQUÊNCIA DESEJADA [Hz]'
+            pos_hint: {'x': -0.37, 'y': 0.47}
+            
+        TextInput:
+            id: freq_des_in
+            font_size: 14
+            text: '60'
+            size_hint: (0.1, 0.05)
+            pos_hint: {'x' : 0.26, 'y' : 0.945}
+            halign: 'center'
+            valign: 'middle'
+            multiline: False
+        
+        Button:
+            id: freq_bt
+            size_hint: (None, None)
+            size: (0.120*512,0.120*512)
+            pos_hint: {'x' : 0.35, 'y' : 0.915}
+            background_normal: 'imgs/atualizar_bt.png'
+            background_down: 'imgs/atualizar_bt.png'
+            on_release:
+                root._alteraFreq()
+
+        CustomLabel:
+            id: t_partida_lb
+            text: 'TEMPO DE PARTIDA [s]'
+            pos_hint: {'x': -0.37, 'y': 0.41}
+            
+        TextInput:
+            id: t_partida
+            text: ''
+            font_size: 14
+            size_hint: (0.1, 0.05)
+            pos_hint: {'x' : 0.26, 'y' : 0.885}
+            halign: 'center'
+            valign: 'middle'
+            multiline: False
+        
+        Button:
+            id: t_partida_bt
+            size_hint: (None, None)
+            size: (0.120*512,0.120*512)
+            pos_hint: {'x' : 0.35, 'y' : 0.855}
+            background_normal: 'imgs/atualizar_bt.png'
+            background_down: 'imgs/atualizar_bt.png'
+            on_release:
+                root._alteraTempoPartida()
+        
+        #labels de leitura da planta
+        CustomLabel:
+            id: titulo
+            text: 'LEITURAS DO MOTOR'
+            pos_hint: {'x': -0.35 , 'y': -0.06}
+
+        #frequência inserida
+        CustomLabel:
+            text: 'Volume:'
+            pos_hint: {'x': 0.07, 'y': 0.30}
+        
+        CustomLabel:
+            id: volume
+            pos_hint: {'x': 0.07 , 'y': 0.25}
+
+        #frequência inserida
+        CustomLabel:
+            text: 'Frequência inserida:'
+            pos_hint: {'x': -0.41, 'y': -0.11}
+        
+        CustomLabel:
+            id: freq_des
+            pos_hint: {'x': -0.24, 'y': -0.11}
+
+        #tempo de partida inserido
+        CustomLabel:
+            text: 'Tempo de partida inserido:'
+            pos_hint: {'x': -0.385, 'y': -0.16}
+
+        CustomLabel:
+            id: t_part
+            pos_hint: {'x': -0.245, 'y': -0.16}
+
+        #frequência real
+        CustomLabel:
+            text: 'Frequência real:'
+            pos_hint: {'x': -0.43, 'y': -0.21}
+        
+        CustomLabel:
+            id: freq_mot
+            pos_hint: {'x': -0.232, 'y': -0.21}
+
+        #Tensão
+        CustomLabel:
+            text: 'Tensão:'
+            pos_hint: {'x': -0.463, 'y': -0.26}
+
+        CustomLabel:
+            id: tensao
+            pos_hint: {'x': -0.23, 'y': -0.26}
+
+        #Rotação
+        CustomLabel:
+            text: 'Rotação:'
+            pos_hint: {'x': -0.458, 'y': -0.31}
+
+        CustomLabel:
+            id: rotacao
+            pos_hint: {'x': -0.22, 'y': -0.31}
+        
+        #Potência de entrada
+        CustomLabel:
+            text: 'Potência de entrada:'
+            pos_hint: {'x': -0.41, 'y': -0.36}
+
+        CustomLabel:
+            id: pot_entrada
+            pos_hint: {'x': -0.235, 'y': -0.36}
+
+        #Corrente
+        CustomLabel:
+            text: 'Corrente:'
+            pos_hint: {'x': -0.457, 'y': -0.41}
+
+        CustomLabel:
+            id: corrente
+            pos_hint: {'x': -0.212, 'y': -0.41}
+        
+        #Temperatura do estator
+        CustomLabel:
+            text: 'Temperatura do estator:'
+            pos_hint: {'x': -0.394, 'y': -0.46}
+
+        CustomLabel:
+            id: temp_estator
+            pos_hint: {'x': -0.235, 'y': -0.46}
+
+        #Vazõa de entrada
+        CustomLabel:
+            text: 'Vazão de entrada:'
+            pos_hint: {'x': -0.165, 'y': 0.25}
+        
+        CustomLabel:
+            id: vz_entrada
+            pos_hint: {'x': -0.18, 'y': 0.20}
+    
+        Button:
+            text: 'Dados Históricos'
+            pos_hint: {'right': 1, 'down': 1}
+            size_hint: (0.2, 0.05)
+            on_release:
+                root._hgraph.open()
+
+#criação de classe derivada da label para fins de praticidade na formatação dos textos
+<CustomLabel@Label>:
+    text: '-.-'
+    font_size: 15
+    bold: True
+    halign: 'center'
+    color: 0, 0, 0, 1
